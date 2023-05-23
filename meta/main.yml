@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: shelly
+  namespace: vladi_k
+  author: Vladimir Vasilev (@vladi-k)
+  description: Configure Shelly-NG devices
+  license: GPLv3
+  min_ansible_version: "2.10"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+dependencies: []

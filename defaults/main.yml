@@ -1,0 +1,20 @@
+---
+shelly_username: admin
+shelly_password: changeme
+shelly_curl_auth: "--anyauth -u {{ shelly_username }}:{{ shelly_password }}"
+
+shelly_rpc_uri: "http://{{ inventory_hostname }}/rpc"
+shelly_rpc_set_config: {}
+shelly_rpc_set_config_combined:
+  id: 1
+  method: Sys.SetConfig
+  params:
+    config: "{{ shelly_rpc_set_config }}"
+shelly_rpc_get_status:
+  id: 1
+  method: Sys.GetStatus
+shelly_rpc_reboot:
+  id: 1
+  method: Shelly.Reboot
+
+shelly_restart: true
