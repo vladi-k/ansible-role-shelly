@@ -1,0 +1,20 @@
+---
+name: Ansible Lint
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+
+    - name: Lint Ansible Role
+      uses: ansible-community/ansible-lint-action@main
+      # optional:
+      # with:
+      #  args: "" # args to pass to ansible-lint command
