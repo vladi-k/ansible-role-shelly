@@ -16,19 +16,30 @@ Role Variables
 * `shelly_password` - Device password.
 * `shelly_curl_auth` - Authentication part of `curl`.
 * `shelly_rpc_uri` - RPC URI.
-* `shelly_rpc_set_config` - dict with configuration for `Sys.SetConfig` method. Check [official documentation](https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Sys/#configuration) for available settings. Example:
+* `shelly_rpc_data` - list to pass to JSON-RPC. Check [official documentation](https://shelly-api-docs.shelly.cloud/gen2/) for available settings. Example:
 ```yaml
-shelly_rpc_set_config:
-  device:
-    name: "{{ inventory_hostname }}"
-    profile: cover
-  location:
-    tz: Europe/Prague
-  sntp:
-    server: time.nist.gov
+shelly_rpc_data:
+  - id: 1
+    method: Sys.SetConfig
+    params:
+      config:
+        device:
+          name: "{{ inventory_hostname }}"
+          profile: cover
+        location:
+          tz: Europe/Prague
+        sntp:
+          server: time.nist.gov
+  - id: 1
+    method: Cover.SetConfig
+    params:
+      id: 0
+      config:
+        power_limit: 120
 ```
-* `shelly_rpc_set_config_combined` - dict with complete configuration for `Sys.SetConfig`.
-* `shelly_rpc_get_status` - dict to call `Sys.GetStatus` method.
+* `shelly_rpc_sys_get_status_retries` - number of retries when calling `Sys.GetStatus` method.
+* `shelly_rpc_sys_get_status_delay` - delay between retries when calling `Sys.GetStatus` method.
+* `shelly_rpc_sys_get_status` - dict to call `Sys.GetStatus` method.
 * `shelly_rpc_reboot` - dict to call `Shelly.Reboot` method.
 * `shelly_restart` - boolean to reboot Shelly if required.
 
@@ -48,14 +59,24 @@ Example Playbook
   gather_facts: no
   vars:
     shelly_password: verysecure
-    shelly_rpc_set_config:
-      device:
-        name: "{{ inventory_hostname }}"
-        profile: cover
-      location:
-        tz: Europe/Prague
-      sntp:
-        server: time.nist.gov
+    shelly_rpc_data:
+      - id: 1
+        method: Sys.SetConfig
+        params:
+          config:
+            device:
+              name: "{{ inventory_hostname }}"
+              profile: cover
+            location:
+              tz: Europe/Prague
+            sntp:
+              server: time.nist.gov
+      - id: 1
+        method: Cover.SetConfig
+        params:
+          id: 0
+          config:
+            power_limit: 120
   roles:
     - role: ansible-role-shelly
       delegate_to: localhost

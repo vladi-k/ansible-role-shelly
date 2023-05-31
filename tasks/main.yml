@@ -1,25 +1,28 @@
 ---
-- name: Set configuration
+- name: Post data over JSON-RPC
   ansible.builtin.command:
-    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_set_config_combined | to_json }}'' {{ shelly_rpc_uri }}'
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ item | to_json }}'' {{ shelly_rpc_uri }}'
+  loop: "{{ shelly_rpc_data }}"
   no_log: true
-  when: shelly_rpc_set_config | length > 0
 
-- name: Get Status
+- name: Get Sys.GetStatus
   ansible.builtin.command:
-    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_get_status | to_json }}'' {{ shelly_rpc_uri }}'
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_sys_get_status | to_json }}'' {{ shelly_rpc_uri }}'
+  retries: "{{ shelly_rpc_sys_get_status_retries }}"
+  delay: "{{ shelly_rpc_sys_get_status_delay }}"
+  until: "not __curl_get_status.stdout.find('restart_required') == -1"
   changed_when: false
   check_mode: false
   no_log: true
   register: __curl_get_status
 
-- name: Convert curl Get Status output to JSON
+- name: Convert curl Sys.GetStatus output to JSON
   ansible.builtin.set_fact:
     __get_status: "{{ __curl_get_status.stdout | from_json }}"
 
 - name: Restart if required
   ansible.builtin.command:
-    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_reboot | to_json }}'' {{ shelly_rpc_uri }}'
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_shelly_reboot | to_json }}'' {{ shelly_rpc_uri }}'
   when:
     - __get_status.result.restart_required | bool
     - shelly_restart | bool
