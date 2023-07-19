@@ -16,6 +16,9 @@ Role Variables
 * `shelly_password` - Device password.
 * `shelly_curl_auth` - Authentication part of `curl`.
 * `shelly_rpc_uri` - RPC URI.
+* `shelly_device_profile` - device profile name.
+* `shelly_rpc_device_profile` - dict to call `Shelly.SetProfile` method.
+* `shelly_wait_for` - seconds to wait for shelly to become available again.
 * `shelly_rpc_data` - list to pass to JSON-RPC. Check [official documentation](https://shelly-api-docs.shelly.cloud/gen2/) for available settings. Example:
 ```yaml
 shelly_rpc_data:
@@ -37,8 +40,8 @@ shelly_rpc_data:
       config:
         power_limit: 120
 ```
-* `shelly_rpc_sys_get_status_retries` - number of retries when calling `Sys.GetStatus` method.
-* `shelly_rpc_sys_get_status_delay` - delay between retries when calling `Sys.GetStatus` method.
+* `shelly_rpc_retries` - number of retries when calling JSON-RPC.
+* `shelly_rpc_delay` - delay between retries when calling JSON-RPC.
 * `shelly_rpc_sys_get_status` - dict to call `Sys.GetStatus` method.
 * `shelly_rpc_reboot` - dict to call `Shelly.Reboot` method.
 * `shelly_restart` - boolean to reboot Shelly if required.
@@ -58,6 +61,7 @@ Example Playbook
 - hosts: my_shelly_devices
   gather_facts: no
   vars:
+    shelly_device_profile: cover
     shelly_password: verysecure
     shelly_rpc_data:
       - id: 1
