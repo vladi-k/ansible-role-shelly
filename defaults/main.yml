@@ -4,10 +4,20 @@ shelly_password: changeme
 shelly_curl_auth: "--anyauth -u {{ shelly_username }}:{{ shelly_password }}"
 
 shelly_rpc_uri: "http://{{ inventory_hostname }}/rpc"
+
+shelly_device_profile: switch
+shelly_rpc_device_profile:
+  id: 1
+  method: Shelly.SetProfile
+  params:
+    name: "{{ shelly_device_profile }}"
+
+shelly_wait_for: 5
+
 shelly_rpc_data: []
 
-shelly_rpc_sys_get_status_retries: 3
-shelly_rpc_sys_get_status_delay: 3
+shelly_rpc_retries: 3
+shelly_rpc_delay: 3
 shelly_rpc_sys_get_status:
   id: 1
   method: Sys.GetStatus

@@ -1,20 +1,40 @@
 ---
+- name: Set device profile
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_device_profile | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_set_profile
+  no_log: true
+
+- name: Convert curl Shelly.SetProfile output to JSON
+  ansible.builtin.set_fact:
+    __set_profile: "{{ __curl_set_profile.stdout | from_json }}"
+
+- name: Wait for shelly to reboot
+  ansible.builtin.wait_for:
+    timeout: "{{ shelly_wait_for }}"
+  delegate_to: localhost
+  when: __set_profile.result.profile_was != shelly_device_profile
+
 - name: Post data over JSON-RPC
   ansible.builtin.command:
     cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ item | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_post_rpc_data
+  retries: "{{ shelly_rpc_retries }}"
+  delay: "{{ shelly_rpc_delay }}"
+  until: "not __curl_post_rpc_data.stdout.find('restart_required') == -1"
   loop: "{{ shelly_rpc_data }}"
   no_log: true
 
 - name: Get Sys.GetStatus
   ansible.builtin.command:
     cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_sys_get_status | to_json }}'' {{ shelly_rpc_uri }}'
-  retries: "{{ shelly_rpc_sys_get_status_retries }}"
-  delay: "{{ shelly_rpc_sys_get_status_delay }}"
+  register: __curl_get_status
+  retries: "{{ shelly_rpc_retries }}"
+  delay: "{{ shelly_rpc_delay }}"
   until: "not __curl_get_status.stdout.find('restart_required') == -1"
   changed_when: false
   check_mode: false
   no_log: true
-  register: __curl_get_status
 
 - name: Convert curl Sys.GetStatus output to JSON
   ansible.builtin.set_fact:
