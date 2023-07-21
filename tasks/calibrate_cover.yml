@@ -1,0 +1,32 @@
+---
+- name: Check if cover is calibrated
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_cover_getstatus | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_cover_getstatus
+  retries: "{{ shelly_rpc_retries }}"
+  delay: "{{ shelly_rpc_delay }}"
+  until: "'pos_control' in __curl_cover_getstatus.stdout"
+  changed_when: false
+  check_mode: false
+  no_log: true
+
+- name: Convert curl Cover.GetStatus output to JSON
+  ansible.builtin.set_fact:
+    __cover_getstatus: "{{ __curl_cover_getstatus.stdout | from_json }}"
+
+- name: Calibrate cover
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_cover_calibrate | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_cover_calibrate
+  no_log: true
+  when: not __cover_getstatus.result.pos_control | bool
+
+- name: Wait until cover is calibrated
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_cover_getstatus | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_cover_calibrate_status
+  retries: "{{ shelly_cover_calibrate_retries }}"
+  delay: "{{ shelly_cover_calibrate_delay }}"
+  until: "'pos_control\":true' in __curl_cover_calibrate_status.stdout"
+  when: not __cover_getstatus.result.pos_control | bool
+  changed_when: false
