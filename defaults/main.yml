@@ -5,20 +5,22 @@ shelly_curl_auth: "--anyauth -u {{ shelly_username }}:{{ shelly_password }}"
 
 shelly_rpc_uri: "http://{{ inventory_hostname }}/rpc"
 
-shelly_device_profile: switch
-shelly_rpc_device_profile:
+shelly_rpc_sys_getconfig:
+  id: 1
+  method: Sys.GetConfig
+
+shelly_profile: ""
+shelly_rpc_shelly_setprofile:
   id: 1
   method: Shelly.SetProfile
   params:
-    name: "{{ shelly_device_profile }}"
-
-shelly_wait_for: 5
+    name: "{{ shelly_profile }}"
 
 shelly_rpc_data: []
 
 shelly_rpc_retries: 3
 shelly_rpc_delay: 3
-shelly_rpc_sys_get_status:
+shelly_rpc_sys_getstatus:
   id: 1
   method: Sys.GetStatus
 
@@ -27,3 +29,17 @@ shelly_rpc_shelly_reboot:
   method: Shelly.Reboot
 
 shelly_restart: true
+
+shelly_cover_calibrate: false
+shelly_rpc_cover_getstatus:
+  id: 1
+  method: Cover.GetStatus
+  params:
+    id: 0
+shelly_rpc_cover_calibrate:
+  id: 1
+  method: Cover.Calibrate
+  params:
+    id: 0
+shelly_cover_calibrate_retries: 15
+shelly_cover_calibrate_delay: 30

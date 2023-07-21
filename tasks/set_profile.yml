@@ -1,0 +1,32 @@
+---
+- name: Get System configuration
+  ansible.builtin.command:
+    cmd: "curl -s {{ shelly_curl_auth }} -X POST -d '{{ shelly_rpc_sys_getconfig | to_json }}' {{ shelly_rpc_uri }}"
+  changed_when: false
+  check_mode: false
+  register: __curl_sys_getconfig
+  no_log: true
+
+- name: Convert curl Sys.GetConfig output to JSON
+  ansible.builtin.set_fact:
+    __sys_getconfig: "{{ __curl_sys_getconfig.stdout | from_json }}"
+
+- name: Block to change device profile
+  when: __sys_getconfig.result.device.profile != shelly_profile
+  block:
+    - name: Set device profile
+      ansible.builtin.command:
+        cmd: "curl -s {{ shelly_curl_auth }} -X POST -d '{{ shelly_rpc_shelly_setprofile | to_json }}' {{ shelly_rpc_uri }}"
+      changed_when: false
+      no_log: true
+
+    - name: Wait for shelly to come back
+      ansible.builtin.command:
+        cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_sys_getstatus | to_json }}'' {{ shelly_rpc_uri }}'
+      register: __curl_sys_getstatus
+      retries: "{{ shelly_rpc_retries }}"
+      delay: "{{ shelly_rpc_delay }}"
+      until: "not __curl_sys_getstatus.stdout.find('restart_required') == -1"
+      changed_when: false
+      check_mode: false
+      no_log: true
