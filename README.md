@@ -14,7 +14,7 @@ Requirements
 Role Variables
 --------------
 
-* `shelly_username:` - Device username.
+* `shelly_username` - Device username.
 * `shelly_password` - Device password.
 * `shelly_curl_auth` - Authentication part of `curl`.
 * `shelly_rpc_uri` - RPC URI.
