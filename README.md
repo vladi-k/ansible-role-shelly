@@ -1,19 +1,38 @@
 ansible-role-shelly
 ====
 
-Configure Shelly-NG (second generation) devices with curl over RPC API.
+Configure Shelly devices.
 
-Note that even in [check mode](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html) the role will POST your configuration to shelly based on `shelly_rpc_data` variable.
+Note that even in [check mode](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html) the role will POST your configuration to Shelly Gen 2 (Shelly-NG) based on `shelly_rpc_data` variable.
+
+Tested on:
+* [Shelly Dimmer 2](https://kb.shelly.cloud/knowledge-base/shelly-dimmer-2)
+* [Shelly Plus 1 PM](https://kb.shelly.cloud/knowledge-base/shelly-plus-1pm)
+* [Shelly Plus 2 PM](https://kb.shelly.cloud/knowledge-base/shelly-plus-2pm)
+* [Shelly Pro 3](https://kb.shelly.cloud/knowledge-base/shelly-pro-3-v1)
+* Gen 1 firmware `v1.14.0`
+* Gen 2 firmware `1.0.3`
+
 
 Requirements
 ------------
 
-* Shelly-NG (tested on Shelly Plus 2 PM, firmwares 0.14.1 and 1.0.0-beta6).
 * curl
 
 Role Variables
 --------------
 
+* `shelly_gen` - set shelly device generation. Can be `1` or `2`.
+* `shelly_gen1_config` list of Gen 1 configuration, example:
+```yaml
+shelly_gen1_config:
+  - path: /settings
+    params:
+      name: "{{ inventory_hostname }}"
+      sntp_server: time.nist.gov
+      transition: 1000
+      min_brightness: 12
+```
 * `shelly_username` - Device username.
 * `shelly_password` - Device password.
 * `shelly_curl_auth` - Authentication part of `curl`.

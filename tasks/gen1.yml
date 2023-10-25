@@ -1,0 +1,11 @@
+---
+- name: POST data
+  ansible.builtin.uri:
+    url: "http://{{ inventory_hostname }}{{ item.path }}?"
+    method: POST
+    url_username: "{{ shelly_username }}"
+    url_password: "{{ shelly_password }}"
+    body: "{{ item.params.keys() | zip(item.params.values()) | map('join', '=') | join('&') }}"
+    body_format: form-urlencoded
+  loop: "{{ shelly_gen1_config }}"
+  no_log: true
