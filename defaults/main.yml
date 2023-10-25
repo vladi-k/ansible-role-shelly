@@ -1,4 +1,7 @@
 ---
+shelly_gen: 2
+shelly_gen1_config: []
+
 shelly_username: admin
 shelly_password: changeme
 shelly_curl_auth: "--anyauth -u {{ shelly_username }}:{{ shelly_password }}"

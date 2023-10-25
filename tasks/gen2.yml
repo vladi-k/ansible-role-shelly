@@ -1,0 +1,43 @@
+---
+- name: Include tasks to set profile
+  ansible.builtin.include_tasks:
+    file: set_profile.yml
+  when: shelly_profile | length > 0
+
+- name: Include tasks to calibrate cover
+  ansible.builtin.include_tasks:
+    file: calibrate_cover.yml
+  when: shelly_cover_calibrate | bool
+
+- name: POST data over JSON-RPC
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ item | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_post_rpc_data
+  retries: "{{ shelly_rpc_retries }}"
+  delay: "{{ shelly_rpc_delay }}"
+  until: "not __curl_post_rpc_data.stdout.find('restart_required') == -1"
+  loop: "{{ shelly_rpc_data }}"
+  check_mode: false
+  no_log: true
+
+- name: Get Sys.GetStatus
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_sys_getstatus | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_sys_getstatus
+  retries: "{{ shelly_rpc_retries }}"
+  delay: "{{ shelly_rpc_delay }}"
+  until: "not __curl_sys_getstatus.stdout.find('restart_required') == -1"
+  changed_when: false
+  check_mode: false
+  no_log: true
+
+- name: Convert curl Sys.GetStatus output to JSON
+  ansible.builtin.set_fact:
+    __sys_getstatus: "{{ __curl_sys_getstatus.stdout | from_json }}"
+
+- name: Restart if required
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_shelly_reboot | to_json }}'' {{ shelly_rpc_uri }}'
+  when:
+    - __sys_getstatus.result.restart_required | bool
+    - shelly_restart | bool
