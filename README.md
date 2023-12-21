@@ -71,6 +71,9 @@ shelly_rpc_data:
 * `shelly_rpc_cover_calibrate` - dict to call `Cover.Calibrate` method.
 * `shelly_cover_calibrate_retries` - number of retries when waiting for cover calibrate.
 * `shelly_cover_calibrate_delay` - delay in seconds between retries when waiting for cover calibrate.
+* `shelly_update` - boolean to update Shelly firmware.
+* `shelly_rpc_shelly_checkforupdate` - dict to call `Shelly.CheckForUpdate`.
+* `shelly_rpc_shelly_update` - dict to call `Shelly.Update`.
 
 Dependencies
 ------------

@@ -46,3 +46,12 @@ shelly_rpc_cover_calibrate:
     id: 0
 shelly_cover_calibrate_retries: 15
 shelly_cover_calibrate_delay: 30
+
+shelly_update: false
+shelly_rpc_shelly_checkforupdate:
+  id: 1
+  method: Shelly.CheckForUpdate
+
+shelly_rpc_shelly_update:
+  id: 1
+  method: Shelly.Update

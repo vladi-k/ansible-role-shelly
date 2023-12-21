@@ -5,8 +5,12 @@
   when:
     - shelly_gen != 1
     - shelly_gen != 2
-  tags: crap
 
 - name: Include Shelly tasks for Gen {{ shelly_gen }}
   ansible.builtin.include_tasks:
     file: "gen{{ shelly_gen }}.yml"
+
+- name: Include tasks to update Shelly
+  ansible.builtin.include_tasks:
+    file: update.yml
+  when: shelly_update | bool
