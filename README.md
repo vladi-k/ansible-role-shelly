@@ -7,11 +7,11 @@ Note that even in [check mode](https://docs.ansible.com/ansible/latest/playbook_
 
 Tested on:
 * [Shelly Dimmer 2](https://kb.shelly.cloud/knowledge-base/shelly-dimmer-2)
-* [Shelly Plus 1 PM](https://kb.shelly.cloud/knowledge-base/shelly-plus-1pm)
-* [Shelly Plus 2 PM](https://kb.shelly.cloud/knowledge-base/shelly-plus-2pm)
+* [Shelly Plus 1PM](https://kb.shelly.cloud/knowledge-base/shelly-plus-1pm)
+* [Shelly Plus 2PM](https://kb.shelly.cloud/knowledge-base/shelly-plus-2pm)
 * [Shelly Pro 3](https://kb.shelly.cloud/knowledge-base/shelly-pro-3-v1)
-* Gen 1 firmware `v1.14.0`
-* Gen 2 firmware `1.0.3`
+* [Shelly Plus 1PM Mini](https://kb.shelly.cloud/knowledge-base/shelly-plus-1pm-mini)
+* [Shelly Plus i4](https://kb.shelly.cloud/knowledge-base/shelly-plus-i4)
 
 
 Requirements
@@ -71,6 +71,9 @@ shelly_rpc_data:
 * `shelly_rpc_cover_calibrate` - dict to call `Cover.Calibrate` method.
 * `shelly_cover_calibrate_retries` - number of retries when waiting for cover calibrate.
 * `shelly_cover_calibrate_delay` - delay in seconds between retries when waiting for cover calibrate.
+* `shelly_update` - boolean to update Shelly firmware.
+* `shelly_rpc_shelly_checkforupdate` - dict to call `Shelly.CheckForUpdate`.
+* `shelly_rpc_shelly_update` - dict to call `Shelly.Update`.
 
 Dependencies
 ------------

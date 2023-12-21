@@ -1,0 +1,21 @@
+---
+- name: Block for Shelly Gen2
+  when: shelly_gen == 2
+  block:
+    - name: Check for Shelly updates
+      ansible.builtin.command:
+        cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_shelly_checkforupdate | to_json }}'' {{ shelly_rpc_uri }}'
+      no_log: true
+      register: __curl_shelly_checkforupdate
+      changed_when: false
+      check_mode: false
+
+    - name: Set proper json variable from previous task
+      ansible.builtin.set_fact:
+        __check_for_updates: "{{ __curl_shelly_checkforupdate.stdout | from_json }}"
+
+    - name: Update Shelly
+      ansible.builtin.command:
+        cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_shelly_update | to_json }}'' {{ shelly_rpc_uri }}'
+      no_log: true
+      when: __check_for_updates.result.stable.version | default('')
