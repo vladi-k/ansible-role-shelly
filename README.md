@@ -17,7 +17,7 @@ Tested on:
 Requirements
 ------------
 
-* curl
+* `curl`
 
 Role Variables
 --------------
@@ -74,6 +74,18 @@ shelly_rpc_data:
 * `shelly_update` - boolean to update Shelly firmware.
 * `shelly_rpc_shelly_checkforupdate` - dict to call `Shelly.CheckForUpdate`.
 * `shelly_rpc_shelly_update` - dict to call `Shelly.Update`.
+* `shelly_rpc_schedule_list` - dict to call `Schedule.List`.
+* `shelly_schedules` - list of schedules. For multiple schedules they need to have unique `timespec`. Example:
+
+```yaml
+shelly_schedules:
+  - timespec: "0 0 3 * * SUN"
+    calls:
+      - method: Shelly.Update
+        params:
+          stage: stable
+
+```
 
 Dependencies
 ------------
