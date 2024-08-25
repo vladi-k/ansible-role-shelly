@@ -55,3 +55,8 @@ shelly_rpc_shelly_checkforupdate:
 shelly_rpc_shelly_update:
   id: 1
   method: Shelly.Update
+
+shelly_rpc_schedule_list:
+  id: 1
+  method: Schedule.List
+shelly_schedules: []

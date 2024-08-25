@@ -1,4 +1,22 @@
 ---
+- name: Get schedules
+  ansible.builtin.command:
+    cmd: 'curl -s {{ shelly_curl_auth }} -X POST -d ''{{ shelly_rpc_schedule_list | to_json }}'' {{ shelly_rpc_uri }}'
+  register: __curl_schedule_list
+  changed_when: false
+  check_mode: false
+  no_log: true
+
+- name: Set __current_schedules
+  ansible.builtin.set_fact:
+    __current_schedules: "{{ __curl_schedule_list.stdout | from_json }}"
+
+- name: Append shelly_rpc_data
+  ansible.builtin.set_fact:
+    shelly_rpc_data: "{{ shelly_rpc_data + [{'id': 1, 'method': 'Schedule.Create', 'params': item}] }}"
+  when: not __current_schedules.result.jobs | selectattr('timespec', 'equalto', item.timespec)
+  loop: "{{ shelly_schedules }}"
+
 - name: Include tasks to set profile
   ansible.builtin.include_tasks:
     file: set_profile.yml
@@ -15,7 +33,7 @@
   register: __curl_post_rpc_data
   retries: "{{ shelly_rpc_retries }}"
   delay: "{{ shelly_rpc_delay }}"
-  until: "not __curl_post_rpc_data.stdout.find('restart_required') == -1"
+  until: "not __curl_post_rpc_data.stdout.find('restart_required') == -1 or __curl_post_rpc_data.stdout.find('rev: ') == -1"
   loop: "{{ shelly_rpc_data }}"
   check_mode: false
   no_log: true
